@@ -73,7 +73,7 @@
                                 <br>
                                 <ul class="m-0 mb-2 py-2" id="answers{{ $question->id }}">
 
-                                    @foreach ($question->answers as $ans_num => $answer)
+                                    @foreach ($question->answers->shuffle() as $ans_num => $answer)
                                         <li><input type="radio" {{ $ans_num == 0 ? 'checked' : '' }} name="ans[{{ $question->id }}]"
                                                    value="{{ $answer->id }}"
                                                    form="questions{{ $task->id }}"> {!! $answer->body !!}</li>
