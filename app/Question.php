@@ -19,4 +19,8 @@ class Question extends Model
     public function answers() {
         return $this->hasMany('App\Answer');
     }
+
+    public function right_answers() {
+        return $this->hasMany('App\Answer')->where('is_right', 1);
+    }
 }

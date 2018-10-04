@@ -8,18 +8,19 @@
                 url: '/getmsg',
                 data: $("#questions" + task_id).serialize(),
                 success: function (data) {
-                    $("#msg").html('Количество правильных ответов: ' + data.count_right + '/' + data.count_questions);
+                    var msg = $("#msg" + task_id);
+                    msg.html('Количество правильных ответов: ' + data.count_right + '/' + data.count_questions);
                     var p = data.count_right / data.count_questions * 100;
-                    $("#msg").removeClass("bg-success bg-warning bg-danger text-white text-dark");
-                    $("#msg").removeClass("d-none");
+                    msg.removeClass("bg-success bg-warning bg-danger text-white text-dark");
+                    msg.removeClass("d-none");
                     if (p >= 75) {
-                        $("#msg").addClass("bg-success text-white");
+                        msg.addClass("bg-success text-white");
                     }
                     else if (p >= 30) {
-                        $("#msg").addClass("bg-warning text-dark");
+                        msg.addClass("bg-warning text-dark");
                     }
                     else
-                        $("#msg").addClass("bg-danger text-white");
+                        msg.addClass("bg-danger text-white");
                 }
             });
         }
@@ -56,7 +57,7 @@
                                 <a href="{{ route('question.create', ['id' => $task->id]) }}">Добавить вопрос</a>
                                 <br>
                             @endcan
-                            @foreach ($task->questions as $q_num => $question)
+                            @foreach ($task->questions->shuffle()->values() as $q_num => $question)
                                 {!! Form::open(['id' => 'questions'.$task->id]) !!} {!! Form::close() !!}
                                 {{ $q_num + 1 }}. {!! $question->body !!}
                                 @can ('edit-article')
@@ -74,14 +75,14 @@
                                 <ul class="m-0 mb-2 py-2" id="answers{{ $question->id }}">
 
                                     @foreach ($question->answers->shuffle() as $ans_num => $answer)
-                                        <li><input type="radio" {{ $ans_num == 0 ? 'checked' : '' }} name="ans[{{ $question->id }}]"
+                                        <li><input type="{{ count($question->right_answers) > 1 ? 'checkbox' : 'radio' }}" name="ans[{{ $question->id }}][]"
                                                    value="{{ $answer->id }}"
                                                    form="questions{{ $task->id }}"> {!! $answer->body !!}</li>
                                     @endforeach
 
                                 </ul>
                             @endforeach
-                            <div id="msg" class="p-3 d-none rounded"></div>
+                            <div id="msg{{ $task->id }}" class="p-3 rounded d-none"></div>
                             {!! Form::button('Проверить ответы', ['onClick' => 'getMessage('.$task->id.')', 'class' => 'btn btn-primary mt-2']) !!}
                         </div>
                     </div>
